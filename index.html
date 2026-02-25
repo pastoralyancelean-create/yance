@@ -3,185 +3,392 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Yance Lean Pastoral | Web Developer</title>
+<meta name="description" content="Yance Lean Pastoral - Web Designer & Developer creating modern and aesthetic websites. View my portfolio and get in touch for freelance projects.">
+<meta name="author" content="Yance Lean Pastoral">
+<title>Yance Lean Pastoral | Web Designer & Developer Portfolio</title>
 
 <script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <link href="https://unpkg.com/aos@2.3.4/dist/aos.css" rel="stylesheet">
 <script src="https://unpkg.com/lucide@latest"></script>
 
+<script>
+tailwind.config = {
+  darkMode: 'class',
+  theme: {
+    extend: {
+      colors: {
+        primary: {
+          500: '#6366f1',
+          600: '#4f46e5',
+          700: '#4338ca'
+        }
+      },
+      fontFamily: {
+        sans: ['Space Grotesk', 'sans-serif']
+      }
+    }
+  }
+}
+</script>
+
 <style>
-body{
-font-family:'Space Grotesk',sans-serif;
+/* Glass morphism effect */
+.glass {
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
-/* Glass style */
-.glass{
-background:rgba(255,255,255,0.6);
-backdrop-filter:blur(14px);
-border:1px solid rgba(255,255,255,0.3);
+.dark .glass {
+  background: rgba(15, 23, 42, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.dark .glass{
-background:rgba(15,23,42,0.7);
-border:1px solid rgba(255,255,255,0.1);
+/* Project card hover effect */
+.project-card:hover .preview {
+  transform: scale(1.08);
 }
 
-/* Sidebar */
-.sidebar{
-position:fixed;
-top:0;
-left:-100%;
-width:260px;
-height:100%;
-transition:0.4s;
-z-index:100;
-}
-.sidebar.active{
-left:0;
+@media (prefers-reduced-motion: reduce) {
+  .project-card:hover .preview {
+    transform: none;
+  }
 }
 
-/* Overlay */
-.overlay{
-position:fixed;
-inset:0;
-background:rgba(0,0,0,0.5);
-opacity:0;
-pointer-events:none;
-transition:0.3s;
-z-index:90;
-}
-.overlay.active{
-opacity:1;
-pointer-events:auto;
+/* Hamburger menu animation */
+.hamburger {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  cursor: pointer;
 }
 
-/* Hamburger */
-.hamburger span{
-display:block;
-width:26px;
-height:3px;
-background:currentColor;
-margin:5px 0;
-transition:0.3s;
+.hamburger span {
+  width: 28px;
+  height: 3px;
+  background: currentColor;
+  transition: all 0.3s ease;
+  border-radius: 2px;
+}
+
+.hamburger.active span:nth-child(1) {
+  transform: rotate(45deg) translate(8px, 8px);
+}
+
+.hamburger.active span:nth-child(2) {
+  opacity: 0;
+}
+
+.hamburger.active span:nth-child(3) {
+  transform: rotate(-45deg) translate(8px, -8px);
+}
+
+/* Sidebar menu */
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: -100%;
+  width: 280px;
+  height: 100vh;
+  transition: left 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  z-index: 100;
+}
+
+.sidebar.active {
+  left: 0;
+}
+
+/* Overlay backdrop */
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  z-index: 99;
+}
+
+.overlay.active {
+  opacity: 1;
+  pointer-events: all;
 }
 </style>
 </head>
 
-<body class="bg-gray-50 dark:bg-slate-950 text-slate-900 dark:text-white">
+<body class="bg-gray-50 dark:bg-slate-950 text-slate-900 dark:text-white font-sans transition-colors">
 
-<!-- MENU BUTTON -->
-<button id="menuBtn" class="fixed top-5 left-5 z-50 glass p-3 rounded-xl">
-<div class="hamburger">
-<span></span>
-<span></span>
-<span></span>
-</div>
+<!-- HAMBURGER BUTTON -->
+<button id="menuToggle" class="fixed top-6 left-6 z-50 p-3 glass rounded-xl shadow-lg hover:shadow-xl transition-all" aria-label="Toggle menu">
+  <div class="hamburger">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
 </button>
 
-<!-- THEME BUTTON -->
-<button id="themeBtn" class="fixed top-5 right-5 z-50 glass p-3 rounded-xl">
-<i data-lucide="moon"></i>
+<!-- THEME TOGGLE -->
+<button id="themeToggle" class="fixed top-6 right-6 z-50 p-3 glass rounded-xl shadow-lg hover:shadow-xl transition-all" aria-label="Toggle dark mode">
+  <i id="themeIcon" data-lucide="moon" aria-hidden="true"></i>
 </button>
 
 <!-- OVERLAY -->
 <div id="overlay" class="overlay"></div>
 
-<!-- SIDEBAR -->
-<aside id="sidebar" class="sidebar glass shadow-xl p-8">
-<h2 class="font-bold text-xl mb-10">Yance</h2>
+<!-- SIDEBAR MENU -->
+<aside id="sidebar" class="sidebar glass shadow-2xl" role="navigation" aria-label="Main navigation">
+  <div class="p-8 h-full flex flex-col">
+    <!-- Profile Section -->
+    <div class="flex items-center gap-3 mb-12" data-aos="fade-right" data-aos-delay="100">
+      <img src="profile.jpg" alt="Yance Lean Pastoral profile picture" class="w-14 h-14 rounded-xl object-cover" loading="lazy">
+      <div>
+        <span class="font-bold text-lg block">Yance</span>
+        <span class="text-xs opacity-60">Web Developer</span>
+      </div>
+    </div>
 
-<nav class="flex flex-col gap-6 font-semibold">
-<a href="#home">Home</a>
-<a href="#about">About</a>
-<a href="#projects">Projects</a>
-<a href="#freelance">Freelance</a>
-<a href="#contact">Contact</a>
-</nav>
+    <!-- Navigation Links -->
+    <nav class="flex flex-col gap-6 font-bold text-sm uppercase">
+      <a href="#home" class="nav-link hover:text-primary-600 transition-all hover:translate-x-2" data-aos="fade-right" data-aos-delay="150">
+        <i data-lucide="home" class="inline w-5 h-5 mr-3" aria-hidden="true"></i>Home
+      </a>
+      <a href="#about" class="nav-link hover:text-primary-600 transition-all hover:translate-x-2" data-aos="fade-right" data-aos-delay="200">
+        <i data-lucide="user" class="inline w-5 h-5 mr-3" aria-hidden="true"></i>About
+      </a>
+      <a href="#projects" class="nav-link hover:text-primary-600 transition-all hover:translate-x-2" data-aos="fade-right" data-aos-delay="250">
+        <i data-lucide="briefcase" class="inline w-5 h-5 mr-3" aria-hidden="true"></i>Projects
+      </a>
+      <a href="#freelance" class="nav-link hover:text-primary-600 transition-all hover:translate-x-2" data-aos="fade-right" data-aos-delay="300">
+        <i data-lucide="rocket" class="inline w-5 h-5 mr-3" aria-hidden="true"></i>Freelance
+      </a>
+      <a href="#contact" class="nav-link hover:text-primary-600 transition-all hover:translate-x-2" data-aos="fade-right" data-aos-delay="350">
+        <i data-lucide="mail" class="inline w-5 h-5 mr-3" aria-hidden="true"></i>Contact
+      </a>
+    </nav>
+
+    <!-- Social Links -->
+    <div class="mt-auto pt-8 border-t border-gray-300 dark:border-slate-700" data-aos="fade-up" data-aos-delay="400">
+      <p class="text-xs opacity-60 mb-4">Connect with me</p>
+      <div class="flex gap-3">
+        <a href="#" class="p-2 glass rounded-lg hover:text-primary-600 transition-colors" aria-label="Facebook">
+          <i data-lucide="facebook" class="w-5 h-5" aria-hidden="true"></i>
+        </a>
+        <a href="#" class="p-2 glass rounded-lg hover:text-primary-600 transition-colors" aria-label="Instagram">
+          <i data-lucide="instagram" class="w-5 h-5" aria-hidden="true"></i>
+        </a>
+        <a href="mailto:youremail@gmail.com" class="p-2 glass rounded-lg hover:text-primary-600 transition-colors" aria-label="Email">
+          <i data-lucide="mail" class="w-5 h-5" aria-hidden="true"></i>
+        </a>
+      </div>
+    </div>
+  </div>
 </aside>
 
-<!-- HERO -->
+<!-- HERO SECTION -->
 <section id="home" class="min-h-screen flex items-center justify-center text-center px-6">
-<div data-aos="fade-up">
-<h1 class="text-6xl font-bold mb-6">
-Yance Lean <span class="text-indigo-600">Pastoral</span>
-</h1>
+  <div data-aos="fade-up">
+    <h1 class="text-5xl sm:text-6xl md:text-7xl font-bold tracking-tighter mb-6">
+      Yance Lean <span class="text-primary-600">Pastoral</span>
+    </h1>
 
-<p class="opacity-70 mb-8">
-Web Designer & Developer creating modern websites
-</p>
+    <p class="text-base sm:text-lg opacity-70 max-w-xl mx-auto mb-8">
+      Web Designer & Developer creating modern and aesthetic websites.
+    </p>
 
-<a href="#projects" class="bg-indigo-600 text-white px-8 py-4 rounded-xl">
-View Projects
-</a>
-</div>
+    <div class="flex flex-col sm:flex-row justify-center gap-4">
+      <a href="#projects" class="bg-primary-600 hover:bg-primary-700 text-white px-8 py-4 rounded-2xl font-bold transition-colors">
+        View My Work
+      </a>
+
+      <a href="#contact" class="glass px-8 py-4 rounded-2xl font-bold hover:shadow-lg transition-shadow">
+        Contact Me
+      </a>
+    </div>
+  </div>
 </section>
 
-<!-- ABOUT -->
-<section id="about" class="py-24 text-center">
-<h2 class="text-4xl font-bold mb-6">About Me</h2>
-<p class="max-w-2xl mx-auto opacity-70">
-I create modern and aesthetic websites that are responsive,
-clean and professional.
-</p>
+<!-- ABOUT SECTION -->
+<section id="about" class="py-24 bg-white/50 dark:bg-slate-900/30">
+  <div class="max-w-5xl mx-auto px-6 text-center" data-aos="fade-up">
+    <h2 class="text-3xl sm:text-4xl font-bold mb-6">About Me</h2>
+    <p class="text-base sm:text-lg opacity-70 leading-relaxed max-w-3xl mx-auto">
+      Hi! I'm <strong>Yance Lean Pastoral</strong>, a passionate web developer who loves building
+      modern, aesthetic, and responsive websites. I enjoy creating designs that look
+      clean, professional, and interactive.
+    </p>
+  </div>
 </section>
 
-<!-- PROJECTS -->
-<section id="projects" class="py-24 text-center">
-<h2 class="text-4xl font-bold mb-12">My Websites</h2>
+<!-- PROJECTS SECTION -->
+<section id="projects" class="py-24">
+  <div class="max-w-6xl mx-auto px-6">
+    <h2 class="text-3xl sm:text-4xl font-bold text-center mb-12">My Websites</h2>
 
-<div class="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+    <div class="grid md:grid-cols-2 gap-8">
 
-<a href="https://gagfaco.vercel.app" target="_blank" class="glass p-6 rounded-2xl">
-<h3 class="text-xl font-bold mb-2">GAGFACO Website</h3>
-<p class="opacity-70">Agriculture cooperative website.</p>
-</a>
+      <!-- Project 1 -->
+      <a href="https://gagfaco.vercel.app" target="_blank" rel="noopener noreferrer" class="project-card group" aria-label="Visit GAGFACO Website">
+        <article class="glass rounded-3xl overflow-hidden hover:shadow-2xl transition-all">
+          <div class="overflow-hidden">
+            <img src="https://api.microlink.io/?url=https://gagfaco.vercel.app&screenshot=true&meta=false&embed=screenshot.url"
+              alt="Screenshot of GAGFACO Website"
+              class="preview w-full h-64 object-cover transition duration-700"
+              loading="lazy">
+          </div>
 
-<a href="https://loveandwandertravelandtours.vercel.app" target="_blank" class="glass p-6 rounded-2xl">
-<h3 class="text-xl font-bold mb-2">Travel & Tours Website</h3>
-<p class="opacity-70">Travel agency website.</p>
-</a>
+          <div class="p-8">
+            <h3 class="text-xl sm:text-2xl font-bold mb-2">GAGFACO Website</h3>
+            <p class="opacity-70 mb-4">
+              Agriculture cooperative website with modern UI and responsive design.
+            </p>
+            <span class="text-primary-600 font-semibold group-hover:translate-x-1 inline-block transition" aria-hidden="true">
+              Visit Website →
+            </span>
+          </div>
+        </article>
+      </a>
 
-</div>
+      <!-- Project 2 -->
+      <a href="https://loveandwandertravelandtours.vercel.app" target="_blank" rel="noopener noreferrer" class="project-card group" aria-label="Visit Travel & Tours Website">
+        <article class="glass rounded-3xl overflow-hidden hover:shadow-2xl transition-all">
+          <div class="overflow-hidden">
+            <img src="https://api.microlink.io/?url=https://loveandwandertravelandtours.vercel.app&screenshot=true&meta=false&embed=screenshot.url"
+              alt="Screenshot of Travel & Tours Website"
+              class="preview w-full h-64 object-cover transition duration-700"
+              loading="lazy">
+          </div>
+
+          <div class="p-8">
+            <h3 class="text-xl sm:text-2xl font-bold mb-2">Travel & Tours Website</h3>
+            <p class="opacity-70 mb-4">
+              A travel agency website showcasing tours, destinations, and services.
+            </p>
+            <span class="text-primary-600 font-semibold group-hover:translate-x-1 inline-block transition" aria-hidden="true">
+              Visit Website →
+            </span>
+          </div>
+        </article>
+      </a>
+
+    </div>
+  </div>
 </section>
 
-<!-- FREELANCE -->
-<section id="freelance" class="py-24 bg-indigo-600 text-white text-center">
-<h2 class="text-4xl font-bold mb-6">Open for Freelance</h2>
-<p class="mb-8">Available for website projects and collaboration.</p>
-<a href="#contact" class="bg-white text-indigo-600 px-8 py-4 rounded-xl">
-Hire Me
-</a>
+<!-- FREELANCE SECTION -->
+<section id="freelance" class="py-24 bg-gradient-to-br from-primary-600 to-indigo-700 text-white">
+  <div class="max-w-4xl mx-auto text-center px-6" data-aos="fade-up">
+
+    <h2 class="text-3xl sm:text-4xl font-bold mb-6">
+      Open for Freelance & Collaboration
+    </h2>
+
+    <p class="opacity-90 mb-10 text-base sm:text-lg max-w-2xl mx-auto">
+      I'm currently available for freelance projects, website design,
+      and collaborations. If you need a modern and aesthetic website,
+      let's work together!
+    </p>
+
+    <a href="#contact"
+      class="inline-block bg-white text-primary-700 px-10 py-4 rounded-2xl font-bold hover:scale-105 transition-transform">
+      Hire Me
+    </a>
+
+  </div>
 </section>
 
-<!-- CONTACT -->
+<!-- CONTACT SECTION -->
 <section id="contact" class="py-24 text-center">
-<h2 class="text-4xl font-bold mb-6">Contact</h2>
-<p class="opacity-70">Let's work together.</p>
+  <div class="max-w-xl mx-auto px-6" data-aos="fade-up">
+    <h2 class="text-3xl sm:text-4xl font-bold mb-6">Contact Me</h2>
+
+    <p class="opacity-70 mb-8 text-base sm:text-lg">
+      Let's connect or work together on a project.
+    </p>
+
+    <div class="flex justify-center gap-6" role="list">
+      <a href="#" class="p-4 glass rounded-xl hover:shadow-lg transition-shadow" aria-label="Facebook profile" role="listitem">
+        <i data-lucide="facebook" aria-hidden="true"></i>
+      </a>
+      <a href="#" class="p-4 glass rounded-xl hover:shadow-lg transition-shadow" aria-label="Instagram profile" role="listitem">
+        <i data-lucide="instagram" aria-hidden="true"></i>
+      </a>
+      <a href="mailto:youremail@gmail.com" class="p-4 glass rounded-xl hover:shadow-lg transition-shadow" aria-label="Send email" role="listitem">
+        <i data-lucide="mail" aria-hidden="true"></i>
+      </a>
+    </div>
+  </div>
 </section>
 
-<footer class="text-center py-6 opacity-60">
-© 2026 Yance Lean Pastoral
+<!-- FOOTER -->
+<footer class="py-8 text-center opacity-60 text-sm">
+  <p>&copy; 2026 Yance Lean Pastoral. All rights reserved.</p>
 </footer>
 
+<!-- SCRIPTS -->
 <script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
 <script>
-AOS.init();
+// Initialize AOS animations
+AOS.init({ 
+  duration: 1000, 
+  once: true 
+});
+
+// Initialize Lucide icons
 lucide.createIcons();
 
-const menuBtn = document.getElementById("menuBtn");
-const sidebar = document.getElementById("sidebar");
-const overlay = document.getElementById("overlay");
+// ===== MENU TOGGLE =====
+const menuToggle = document.getElementById('menuToggle');
+const sidebar = document.getElementById('sidebar');
+const overlay = document.getElementById('overlay');
+const hamburger = menuToggle.querySelector('.hamburger');
+const navLinks = document.querySelectorAll('.nav-link');
 
-menuBtn.onclick = () =>{
-sidebar.classList.toggle("active");
-overlay.classList.toggle("active");
+function toggleMenu() {
+  sidebar.classList.toggle('active');
+  overlay.classList.toggle('active');
+  hamburger.classList.toggle('active');
 }
 
-overlay.onclick = () =>{
-sidebar.classList.remove("active");
-overlay.classList.remove("active");
+// Open/close menu
+menuToggle.addEventListener('click', toggleMenu);
+overlay.addEventListener('click', toggleMenu);
+
+// Close menu when clicking nav links
+navLinks.forEach(link => {
+  link.addEventListener('click', () => {
+    if (sidebar.classList.contains('active')) {
+      toggleMenu();
+    }
+  });
+});
+
+// ===== THEME TOGGLE =====
+const themeToggle = document.getElementById('themeToggle');
+const themeIcon = document.getElementById('themeIcon');
+
+// Check for saved theme preference
+const savedTheme = localStorage.getItem('theme');
+if (savedTheme === 'dark') {
+  document.documentElement.classList.add('dark');
+  themeIcon.setAttribute('data-lucide', 'sun');
+  lucide.createIcons();
 }
+
+// Toggle theme
+themeToggle.addEventListener('click', () => {
+  document.documentElement.classList.toggle('dark');
+  const isDark = document.documentElement.classList.contains('dark');
+  
+  // Update icon
+  themeIcon.setAttribute('data-lucide', isDark ? 'sun' : 'moon');
+  lucide.createIcons();
+  
+  // Save preference
+  localStorage.setItem('theme', isDark ? 'dark' : 'light');
+});
 </script>
 
 </body>
